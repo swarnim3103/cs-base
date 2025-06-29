@@ -33,13 +33,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'recognitionStarted') {
     console.log("Recognition started message received");
     document.getElementById("start").textContent = "Stop Listening";
-    document.getElementById("status").textContent = "Listening...";
+    document.getElementById("status").textContent = "Listening for commands...";
     document.getElementById("transcript").classList.add("listening");
     isListening = true;
   } else if (request.type === 'recognitionStopped') {
     console.log("Recognition stopped message received");
     document.getElementById("start").textContent = "Start Listening";
-    document.getElementById("status").textContent = "Click to start voice control";
+    document.getElementById("status").textContent = "Say 'start listening' or click button";
     document.getElementById("transcript").classList.remove("listening");
     isListening = false;
   } else if (request.type === 'transcript') {
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById("start").textContent = "Reload Page Required";
         } else {
           console.log("Content script responded:", response);
-          document.getElementById("status").textContent = "Content script is working!";
+          document.getElementById("status").textContent = "Ready! Click 'Start Listening' to test voice";
         }
       });
     } else {

@@ -1,4 +1,5 @@
 let recognition;
+let activationRecognition; // Separate recognition for activation
 let isListening = false;
 let mouseX = window.innerWidth / 2;  // Start mouse in center
 let mouseY = window.innerHeight / 2;
@@ -69,13 +70,15 @@ function initSpeechRecognition() {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     console.log("Speech recognition API available");
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    // Main recognition for commands
     recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
 
     recognition.onstart = function() {
-      console.log("Speech recognition started");
+      console.log("Main speech recognition started");
       isListening = true;
       createMouseIndicator(); // Show mouse indicator when listening starts
       try {
@@ -131,7 +134,7 @@ function initSpeechRecognition() {
     };
 
     recognition.onend = function() {
-      console.log("Speech recognition ended");
+      console.log("Main speech recognition ended");
       isListening = false;
       removeMouseIndicator(); // Hide mouse indicator when listening stops
       try {
@@ -139,13 +142,85 @@ function initSpeechRecognition() {
       } catch (error) {
         console.error("Error sending recognition stopped message:", error);
       }
+      
+      // Restart activation listener after main recognition ends
+      setTimeout(() => {
+        if (!isListening) {
+          startActivationListener();
+        }
+      }, 1000);
+    };
+
+    // Activation recognition - always listening for "start listening"
+    activationRecognition = new SpeechRecognition();
+    activationRecognition.continuous = true;
+    activationRecognition.interimResults = false;
+    activationRecognition.lang = 'en-US';
+
+    activationRecognition.onstart = function() {
+      console.log("Activation listener started");
+    };
+
+    activationRecognition.onresult = function(event) {
+      const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+      console.log("Activation heard:", transcript);
+      
+      if (transcript.includes("start listening") || transcript.includes("hey voice") || transcript.includes("voice mouse")) {
+        console.log("Activation phrase detected:", transcript);
+        activationRecognition.stop();
+        
+        // Start main recognition
+        try {
+          recognition.start();
+        } catch (error) {
+          console.error("Error starting main recognition:", error);
+        }
+      }
+    };
+
+    activationRecognition.onerror = function(event) {
+      console.error("Activation recognition error:", event.error);
+      // Restart activation listener on error
+      setTimeout(() => {
+        if (!isListening) {
+          startActivationListener();
+        }
+      }, 2000);
+    };
+
+    activationRecognition.onend = function() {
+      console.log("Activation recognition ended");
+      // Restart activation listener unless main recognition is active
+      setTimeout(() => {
+        if (!isListening) {
+          startActivationListener();
+        }
+      }, 1000);
     };
 
     console.log("Speech recognition initialized successfully");
+    
+    // Start activation listener
+    startActivationListener();
+    
     return true;
   } else {
     console.error("Speech recognition not supported in this browser");
     return false;
+  }
+}
+
+// Start the activation listener
+function startActivationListener() {
+  if (!isListening && activationRecognition) {
+    try {
+      console.log("Starting activation listener...");
+      activationRecognition.start();
+    } catch (error) {
+      console.error("Error starting activation listener:", error);
+      // Retry after a delay
+      setTimeout(startActivationListener, 3000);
+    }
   }
 }
 
@@ -222,7 +297,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     createMouseIndicator();
     sendResponse({ success: true });
   } else if (request.action === 'startRecognition') {
-    console.log("Starting recognition from popup");
+    console.log("Manual start recognition from popup");
+    if (activationRecognition) {
+      activationRecognition.stop(); // Stop activation listener
+    }
     if (recognition && !isListening) {
       try {
         recognition.start();
@@ -246,7 +324,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       console.log("Already listening");
     }
   } else if (request.action === 'stopRecognition') {
-    console.log("Stopping recognition from popup");
+    console.log("Manual stop recognition from popup");
     if (recognition && isListening) {
       recognition.stop();
     }
