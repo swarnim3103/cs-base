@@ -17,8 +17,6 @@ cursor.style.cssText = `
   box-shadow: 0 0 20px rgba(100, 166, 247, 0.8), 0 0 40px rgba(100, 166, 247, 0.4);
   animation: spaceCursor 2s ease-in-out infinite;
 `;
-
-// Add keyframes for space cursor animation
 const style = document.createElement('style');
 style.textContent = `
   @keyframes spaceCursor {
@@ -103,8 +101,6 @@ function showTranscript(text) {
     max-width: 300px;
     word-wrap: break-word;
   `;
-  
-  // Add slide-in animation for the notification
   if (!document.getElementById('voice-note-styles')) {
     const notificationStyle = document.createElement('style');
     notificationStyle.id = 'voice-note-styles';

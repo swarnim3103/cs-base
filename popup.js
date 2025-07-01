@@ -9,8 +9,6 @@ function updateStatus(listening) {
   isListening = listening;
   statusDiv.textContent = listening ? "Listening..." : "Not Listening";
   statusDiv.className = listening ? "listening" : "";
-  
-  // Update button text and style
   toggleBtn.textContent = listening ? "Stop Listening" : "Start Listening";
   toggleBtn.className = listening ? "listening" : "";
 }
