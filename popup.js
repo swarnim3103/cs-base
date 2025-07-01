@@ -1,11 +1,18 @@
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
+const toggleBtn = document.getElementById("toggleBtn");
 const clearBtn = document.getElementById("clearBtn");
 const statusDiv = document.getElementById("status");
 const transcriptDiv = document.getElementById("transcript");
 
+let isListening = false;
+
 function updateStatus(listening) {
-  statusDiv.textContent = listening ? "🎤 Listening..." : "Not Listening";
+  isListening = listening;
+  statusDiv.textContent = listening ? "Listening..." : "Not Listening";
+  statusDiv.className = listening ? "listening" : "";
+  
+  // Update button text and style
+  toggleBtn.textContent = listening ? "Stop Listening" : "Start Listening";
+  toggleBtn.className = listening ? "listening" : "";
 }
 
 function updateTranscript(entries) {
@@ -17,19 +24,19 @@ function updateTranscript(entries) {
   });
 }
 
-startBtn.onclick = () => {
-  sendToTab({ action: "startListening" });
-  updateStatus(true);
-};
-
-stopBtn.onclick = () => {
-  sendToTab({ action: "stopListening" });
-  updateStatus(false);
+toggleBtn.onclick = () => {
+  if (isListening) {
+    sendToTab({ action: "stopListening" });
+    updateStatus(false);
+  } else {
+    sendToTab({ action: "startListening" });
+    updateStatus(true);
+  }
 };
 
 clearBtn.onclick = () => {
   sendToTab({ action: "clearTranscript" });
-  transcriptDiv.textContent = "Say something...";
+  transcriptDiv.innerHTML = "";
 };
 
 function sendToTab(msg) {

@@ -3,16 +3,40 @@
   <head>
     <style>
       body {
-        font-family: sans-serif;
-        width: 250px;
-        padding: 10px;
-        background: #333;
-        color: white;
+        font-family: 'Segoe UI', sans-serif;
+        width: 280px;
+        padding: 15px;
+        background-image: url("starry\ sky.jpg");
+        background-size: cover;
+        color: #e8f4ff;
+        border-radius: 12px;
+      }
+
+      h2 {
+        color: #64a6f7;
+        font-size: 25px;
+        margin: 0 0 15px 0;
+        letter-spacing: 2px;
       }
 
       #status {
-        margin: 10px 0;
+        margin: 15px 0;
         font-weight: bold;
+        padding: 12px;
+        font-size: 18px;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+      }
+
+      #status.listening {
+        color: #80b6ff;
+        text-shadow: 0 0 8px rgba(128, 182, 255, 0.6);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
       }
 
       button {
@@ -20,26 +44,84 @@
         margin: 5px 0;
         padding: 10px;
         font-size: 14px;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        color: #ffffff;
+        border: 2px solid #4a90e2;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      button:hover {
+        background: linear-gradient(135deg, #2a2a4e, #26314e, #1f4480);
+        border-color: #64a6f7;
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      #toggleBtn.listening {
+        background: linear-gradient(135deg, #0f3460, #1a4b7a, #2a5a8f);
+        border-color: #80b6ff;
+      }
+
+      #toggleBtn.listening:hover {
+        background: linear-gradient(135deg, #1f4480, #2a5b9a, #3a6aaf);
+        border-color: #99c6ff;
       }
 
       #transcript {
         font-size: 12px;
-        background: #222;
-        padding: 10px;
-        height: 100px;
-        overflow-y: scroll;
-        margin-top: 10px;
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+        padding: 15px;
+        height: 120px;
+        overflow-y: auto;
+        margin-top: 15px;
+        color: #e8f4ff;
+        border-radius: 8px;
+        border: 2px solid #4a90e2;
+        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        backdrop-filter: blur(5px);
+        line-height: 1.4;
+        font-family: 'Consolas', monospace;
+      }
+
+      #transcript::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #transcript::-webkit-scrollbar-track {
+        background: rgba(26, 26, 46, 0.5);
         border-radius: 4px;
+      }
+
+      #transcript::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #4a90e2, #64a6f7);
+        border-radius: 4px;
+      }
+
+      #transcript::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #64a6f7, #80b6ff);
+      }
+
+      #transcript:empty::before {
+        content: "Voice commands will appear here...";
+        color: rgba(232, 244, 255, 0.5);
+        font-style: italic;
       }
     </style>
   </head>
   <body>
     <h2>Voice Mouse</h2>
     <div id="status">Not Listening</div>
-    <button id="startBtn">Start Listening</button>
-    <button id="stopBtn">Stop Listening</button>
+    <button id="toggleBtn">Start Listening</button>
     <button id="clearBtn">Clear Transcript</button>
-    <div id="transcript">Say something...</div>
+    <div id="transcript"></div>
 
     <script src="popup.js"></script>
   </body>
