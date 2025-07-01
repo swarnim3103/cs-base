@@ -4,49 +4,77 @@
     <title>Voice Mouse</title>
     <style>
       body {
-        width: 250px;
-        padding: 10px;
+        width: 220px;
+        padding: 15px;
         font-family: Arial, sans-serif;
+        background-image: url("starry\ sky.jpg");
+        background-size: cover;
       }
       button {
         width: 100%;
-        padding: 10px;
-        font-size: 14px;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: bold;
         cursor: pointer;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #092444, #357abd);
+        color: rgb(255, 255, 255);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+        transition: all 0.3s ease;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+      button:hover {
+        background: linear-gradient(135deg, #99c1f2, #4689cd);
+        box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
+        transform: translateY(-2px);
+        color:#092444;
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
       }
       #status {
-        margin-top: 10px;
+        margin: 10px 0;
         font-size: 12px;
-        color: #666;
+        color:white;
       }
       #transcript {
-        max-height: 80px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 5px;
+        min-height: 30px;
+        font-size: 12px;
+        margin: 10px 0;
       }
       .listening {
-        background-color: #e8f5e8 !important;
-        border-color: #4CAF50 !important;
+        background-color: #c0d5ef !important;
+        border: 2px solid #4d80d7 !important;
+      }
+      .commands {
+        font-size: 12px;
+        color: white;
+        margin-top: 10px;
+        
       }
     </style>
   </head>
   <body>
-    <h2>Voice Mouse</h2>
+    <h2 style="color: #f5f5f5;">Tremor Ease</h2>
     <button id="start">Start Listening</button>
-    <button id="test" style="margin-top: 5px; width: 100%; padding: 5px; font-size: 12px;">Test Circle</button>
-    <div id="status">Click to start voice control</div>
-    <div id="transcript" style="margin-top: 10px; padding: 8px; background: #f5f5f5; border-radius: 4px; min-height: 40px; font-size: 12px; color: #333;">
-      <strong>Last command:</strong> <span id="lastCommand">None</span>
+    <div id="status">Ready</div>
+    <div id="transcript">
+      <strong>Last:</strong> <span id="lastCommand">None</span>
     </div>
-    <div style="margin-top: 10px; font-size: 11px; color: #888;">
-      <strong>Voice Activation:</strong><br>
-      Say "start listening" or "hey voice"<br><br>
-      <strong>Commands:</strong><br>
-      "scroll down/up"<br>
-      "move left/right/up/down"<br>
-      "click"<br>
-      "center mouse"<br>
-      "stop listening"
+    <div class="commands">
+      <strong>Say:</strong><br><br>
+      "start listening" ->  activate<br><br>
+      "move up/down/left/right"<br><br>
+      "click" <br><br>
+     "scroll up/down"<br><br>
+      "stop listening" -> deactivate
     </div>
     <script src="popup.js"></script>
   </body>
