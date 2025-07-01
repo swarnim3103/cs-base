@@ -1,4 +1,5 @@
 let isListening = false;
+let isActivelyListening = false;
 let recognition = new webkitSpeechRecognition();
 let cursor = document.createElement("div");
 let transcript = [];
@@ -43,14 +44,14 @@ function moveCursor(x, y) {
 
 function handleCommand(command) {
   command = command.toLowerCase();
-
   if (command.includes("start listening")) {
-    startListening();
+    startActiveListening();
+    return;
   } else if (command.includes("stop listening")) {
-    stopListening();
+    stopActiveListening();
+    return;
   }
-
-  if (!isListening) return;
+  if (!isActivelyListening) return;
 
   if (command.includes("move up")) mouseY -= 20;
   if (command.includes("move down")) mouseY += 20;
@@ -70,6 +71,8 @@ function handleCommand(command) {
 }
 
 function showTranscript(text) {
+  if (!isActivelyListening) return;
+  
   transcript.push({ text, time: Date.now() });
   if (transcript.length > 20) transcript.shift();
 
@@ -132,31 +135,119 @@ recognition.onresult = (event) => {
 };
 
 recognition.onerror = () => {
-  if (isListening) recognition.start();
+  setTimeout(() => recognition.start(), 100);
 };
 
 recognition.onend = () => {
-  if (isListening) recognition.start();
+  setTimeout(() => recognition.start(), 100);
 };
 
-function startListening() {
-  if (!isListening) {
-    isListening = true;
-    recognition.start();
+function startActiveListening() {
+  if (!isActivelyListening) {
+    isActivelyListening = true;
+    isListening = true; 
     cursor.style.display = "block";
+    showStartNotification();
   }
 }
 
-function stopListening() {
-  isListening = false;
-  recognition.stop();
-  cursor.style.display = "none";
+function stopActiveListening() {
+  if (isActivelyListening) {
+    isActivelyListening = false;
+    isListening = false; 
+    cursor.style.display = "none";
+    
+    showStopNotification();
+  }
 }
 
+function showStartNotification() {
+  let note = document.getElementById("voice-note");
+  if (note) note.remove();
+
+  let div = document.createElement("div");
+  div.id = "voice-note";
+  div.textContent = "Voice control activated";
+  div.style.cssText = `
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+    color: #80b6ff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 9998;
+    border: 2px solid #80b6ff;
+    box-shadow: 0 4px 15px rgba(128, 182, 255, 0.3), 0 0 20px rgba(128, 182, 255, 0.2);
+    backdrop-filter: blur(10px);
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    animation: slideInSpace 0.3s ease-out;
+    max-width: 300px;
+    word-wrap: break-word;
+  `;
+  
+  if (!document.getElementById('voice-note-styles')) {
+    const notificationStyle = document.createElement('style');
+    notificationStyle.id = 'voice-note-styles';
+    notificationStyle.textContent = `
+      @keyframes slideInSpace {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    `;
+    document.head.appendChild(notificationStyle);
+  }
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2000);
+}
+
+function showStopNotification() {
+  let note = document.getElementById("voice-note");
+  if (note) note.remove();
+
+  let div = document.createElement("div");
+  div.id = "voice-note";
+  div.textContent = "Voice control deactivated";
+  div.style.cssText = `
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+    color: #64a6f7;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 9998;
+    border: 2px solid #4a90e2;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3), 0 0 20px rgba(100, 166, 247, 0.2);
+    backdrop-filter: blur(10px);
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    animation: slideInSpace 0.3s ease-out;
+    max-width: 300px;
+    word-wrap: break-word;
+  `;
+  
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2000);
+}
+
+recognition.start();
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.action === "startListening") startListening();
-  if (msg.action === "stopListening") stopListening();
-  if (msg.action === "getStatus") sendResponse({ isListening });
+  if (msg.action === "startListening") startActiveListening();
+  if (msg.action === "stopListening") stopActiveListening();
+  if (msg.action === "getStatus") sendResponse({ isListening: isActivelyListening });
   if (msg.action === "getTranscript") sendResponse({ transcript });
   if (msg.action === "clearTranscript") {
     transcript = [];
