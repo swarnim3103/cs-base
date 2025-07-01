@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Voice Mouse Control",
+  "name": "Tremor Ease",
   "version": "1.0",
   "description": "Control your mouse with voice commands",
   "permissions": ["scripting", "activeTab"],
