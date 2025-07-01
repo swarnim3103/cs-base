@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: sans-serif;
+        width: 250px;
+        padding: 10px;
+        background: #333;
+        color: white;
+      }
+
+      #status {
+        margin: 10px 0;
+        font-weight: bold;
+      }
+
+      button {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      #transcript {
+        font-size: 12px;
+        background: #222;
+        padding: 10px;
+        height: 100px;
+        overflow-y: scroll;
+        margin-top: 10px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Voice Mouse</h2>
+    <div id="status">Not Listening</div>
+    <button id="startBtn">Start Listening</button>
+    <button id="stopBtn">Stop Listening</button>
+    <button id="clearBtn">Clear Transcript</button>
+    <div id="transcript">Say something...</div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
